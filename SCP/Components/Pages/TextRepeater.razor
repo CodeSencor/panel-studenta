@@ -1,0 +1,15 @@
+﻿<h3>TextRepeater</h3>
+
+<div style="min-height: 24px">@text</div>
+
+<input @oninput="Repeat"/>
+
+@code {
+    private string text = string.Empty;
+
+    private void Repeat(ChangeEventArgs e)
+    {
+        if (e.Value is string value)
+            text = value;
+    }
+}

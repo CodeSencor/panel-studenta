@@ -1,4 +1,6 @@
+using Microsoft.AspNetCore.ResponseCompression;
 using SCP.Components;
+using SCP.Hubs;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -6,7 +8,17 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 
+builder.Services.AddControllers();
+
+builder.Services.AddSignalR();
+builder.Services.AddResponseCompression(opts =>
+{
+    opts.MimeTypes = ResponseCompressionDefaults.MimeTypes.Concat(
+        new[] { "application/octet-stream" });
+});
+
 var app = builder.Build();
+app.UseResponseCompression();
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
@@ -18,8 +30,10 @@ if (!app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-
 app.UseAntiforgery();
+
+app.MapControllers();
+app.MapHub<ChatHub>("chathub");
 
 app.MapStaticAssets();
 app.MapRazorComponents<App>()
